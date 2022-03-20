@@ -39,36 +39,6 @@ void Merge(std::vector<RectangleShape>& bars, std::vector<RectangleShape>& aux, 
 }
 
 int Partition(std::vector<RectangleShape>& bars, int lo, int hi, size_t step) {
-	if (bars.size() <= 1) return -1;
-
-	int i = lo;
-	int j = hi + 1;
-	RectangleShape pivot = bars[lo];
-	while (true) {
-		// find item on lo to swap
-		while (bars[++i].getSize().y <= pivot.getSize().y) {
-			if (i == hi) break;
-		}
-
-		// find item on hi to swap
-		while (bars[--j].getSize().y > pivot.getSize().y) {
-			if (j == lo) break;      // redundant since a[lo] acts as sentinel
-		}
-
-		// check if pointers cross
-		if (i >= j) break;
-
-		Exch(bars, i, j);
-	}
-
-	// put partitioning item v at a[j]
-	Exch(bars, lo, j);
-
-	// now, a[lo .. j-1] <= a[j] <= a[j+1 .. hi]
-	return j;
-}
-
-int TestPartition(std::vector<RectangleShape>& bars, int lo, int hi, size_t step) {
 	int i = lo;
 	int j = hi + 1;
 
@@ -154,13 +124,12 @@ void QuickSortStep(std::vector<RectangleShape>& bars, size_t step, std::stack<in
 		// initialize top of stack
 		aux_stack.push(-1);
 
-		// push initial values of l and h to stack
+		// push the start and end
 		aux_stack.push(0);
 		aux_stack.push(bars.size() - 1);
 	}
 
-	// Keep popping from stack while is not empty
-
+	// Keep popping from stack if it is not empty
 	if (aux_stack.top() >= 0) {
 		// Pop h and l
 		h = aux_stack.top();
@@ -170,7 +139,7 @@ void QuickSortStep(std::vector<RectangleShape>& bars, size_t step, std::stack<in
 
 		// Set pivot element at its correct position
 		// in sorted array
-		int p = TestPartition(bars, l, h, step);
+		int p = Partition(bars, l, h, step);
 
 		// If there are elements on left side of pivot,
 		// then push left side to stack
